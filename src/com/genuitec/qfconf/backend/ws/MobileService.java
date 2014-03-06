@@ -23,28 +23,54 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
 import com.genuitec.qfconf.backend.model.Attendee;
+import com.genuitec.qfconf.backend.model.Conference;
 import com.genuitec.qfconf.backend.model.ConferenceModel;
+import com.genuitec.qfconf.backend.model.SyncRequest;
+import com.genuitec.qfconf.backend.model.SyncResponse;
+import com.genuitec.qfconf.backend.model.SyncResponseData;
+import com.genuitec.qfconf.backend.model.SyncResponseInfo;
 
-@Produces("application/xml")
-@Path("sync")
-public class SyncService {
+@Consumes("application/json")
+@Produces("application/json")
+@Path("mobile")
+public class MobileService {
 
-	private Logger log = Logger.getLogger(SyncService.class.getName());
+	private Logger log = Logger.getLogger(MobileService.class.getName());
 
 	@GET
-	@Path("{conference}")
-	public List<Attendee> getAttendees(@PathParam("conference") int conferenceID) {
+	@Path("login")
+	public String login() {
+		return "already-logged-in";
+	}
+
+	@POST
+	@Path("sync")
+	public SyncResponse sync(SyncRequest request) {
 		EntityManager em = ConferenceModel.newEntityManager();
 		try {
-			List<Attendee> confs = em.createQuery(
-					"SELECT a FROM Attendee a WHERE a.conferenceID="
-							+ conferenceID
+			List<Conference> confs = em.createQuery(
+					"SELECT c FROM Conference c WHERE c.syncTime > "
+							+ request.getInfo().getTime()
+							+ " ORDER BY c.startsOn DESC", Conference.class)
+					.getResultList();
+
+			List<Attendee> scans = em.createQuery(
+					"SELECT a FROM Attendee a WHERE a.syncTime > "
+							+ request.getInfo().getTime()
 							+ " ORDER BY a.lastName, a.firstName",
 					Attendee.class).getResultList();
-			log.log(Level.INFO,
-					"Responding with {0} attendees for conference ID {1}",
-					new Object[] { confs.size(), conferenceID });
-			return confs;
+
+			SyncResponse response = new SyncResponse();
+			response.setInfo(new SyncResponseInfo());
+			response.getInfo().setTime(System.currentTimeMillis());
+			response.setData(new SyncResponseData());
+
+			if (!confs.isEmpty())
+				response.getData().setConferences(confs);
+			if (!scans.isEmpty())
+				response.getData().setScans(scans);
+
+			return response;
 		} finally {
 			em.close();
 		}

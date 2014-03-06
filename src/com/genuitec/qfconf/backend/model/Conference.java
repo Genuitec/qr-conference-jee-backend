@@ -17,6 +17,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -36,6 +37,7 @@ public class Conference implements Comparable<Conference> {
 	private Date startsOn;
 	@Temporal(TemporalType.DATE)
 	private Date endsOn;
+	private long syncTime;
 
 	public int getId() {
 		return id;
@@ -57,6 +59,7 @@ public class Conference implements Comparable<Conference> {
 		return startsOn;
 	}
 
+	@XmlElement(name = "time")
 	@JsonDeserialize(using = YYYYMMDDDateDeserializer.class)
 	@JsonSerialize(using = YYYYMMDDDateSerializer.class)
 	public void setStartsOn(Date startsOn) {
@@ -67,6 +70,7 @@ public class Conference implements Comparable<Conference> {
 		return endsOn;
 	}
 
+	@XmlElement(name = "endtime")
 	@JsonDeserialize(using = YYYYMMDDDateDeserializer.class)
 	@JsonSerialize(using = YYYYMMDDDateSerializer.class)
 	public void setEndsOn(Date endsOn) {
@@ -76,5 +80,14 @@ public class Conference implements Comparable<Conference> {
 	@Override
 	public int compareTo(Conference arg0) {
 		return arg0.startsOn.compareTo(this.startsOn);
+	}
+
+	@XmlElement(name = "synctime")
+	public long getSyncTime() {
+		return syncTime;
+	}
+
+	public void setSyncTime(long syncTime) {
+		this.syncTime = syncTime;
 	}
 }

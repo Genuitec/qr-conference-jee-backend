@@ -10,13 +10,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
-public class YYYYMMDDHHMMDateDeserializer extends JsonDeserializer<Date> {
+public class YYYYMMDDHHMMSSDateDeserializer extends JsonDeserializer<Date> {
 	@Override
 	public Date deserialize(JsonParser jsonparser,
 			DeserializationContext deserializationcontext) throws IOException,
 			JsonProcessingException {
 
-		SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String date = jsonparser.getText();
 		try {
 			return format.parse(date);

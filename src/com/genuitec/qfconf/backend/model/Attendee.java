@@ -14,48 +14,51 @@ import java.util.Date;
 import java.util.SortedSet;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.annotations.Index;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.genuitec.qfconf.backend.serialize.YYYYMMDDHHMMDateDeserializer;
-import com.genuitec.qfconf.backend.serialize.YYYYMMDDHHMMDateSerializer;
+import com.genuitec.qfconf.backend.serialize.YYYYMMDDHHMMSSDateDeserializer;
+import com.genuitec.qfconf.backend.serialize.YYYYMMDDHHMMSSDateSerializer;
 
 @Entity
 @XmlRootElement
+@JsonIgnoreProperties({ "sid", "table_name", "time", "rowcreated", "row_id",
+		"syncupdatetime", "scannedby_name" })
 public class Attendee {
 
 	// identifying data
 	@Id
-	@GeneratedValue
-	private int id;
+	private String id;
 	@Index
-	private String qrCodeSignature;
-	@Index
-	private long syncID;
+	private long syncTime;
 	private int conferenceID;
 
 	// information captured from QR code
+	private String fn; // TODO remove when mobile app updated
 	private String firstName;
 	private String lastName;
 	private String organization;
 	private String title;
 	private String telephone;
 	private String cell;
-	private String fax;
 	private String email;
 	private String website;
+	private String adr; // TODO remove when mobile app updated
 	private String street;
 	private String city;
 	private String state;
 	private String postcode;
 	private String country;
+	private String type;
+	private String version;
 
 	// data specified by employee at conference
 	private String employee;
@@ -68,14 +71,15 @@ public class Attendee {
 	private String notes;
 	private boolean followup;
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
+	@XmlElement(name = "conference_id")
 	public int getConferenceID() {
 		return conferenceID;
 	}
@@ -84,6 +88,7 @@ public class Attendee {
 		this.conferenceID = conferenceID;
 	}
 
+	@XmlElement(name = "firstname")
 	public String getFirstName() {
 		return firstName;
 	}
@@ -92,6 +97,7 @@ public class Attendee {
 		this.firstName = first;
 	}
 
+	@XmlElement(name = "lastname")
 	public String getLastName() {
 		return lastName;
 	}
@@ -100,6 +106,7 @@ public class Attendee {
 		this.lastName = last;
 	}
 
+	@XmlElement(name = "org")
 	public String getOrganization() {
 		return organization;
 	}
@@ -108,6 +115,7 @@ public class Attendee {
 		this.organization = organization;
 	}
 
+	@XmlElement(name = "title")
 	public String getTitle() {
 		return title;
 	}
@@ -116,6 +124,7 @@ public class Attendee {
 		this.title = title;
 	}
 
+	@XmlElement(name = "tel")
 	public String getTelephone() {
 		return telephone;
 	}
@@ -124,20 +133,13 @@ public class Attendee {
 		this.telephone = telephone;
 	}
 
+	@XmlElement(name = "cell")
 	public String getCell() {
 		return cell;
 	}
 
 	public void setCell(String cell) {
 		this.cell = cell;
-	}
-
-	public String getFax() {
-		return fax;
-	}
-
-	public void setFax(String fax) {
-		this.fax = fax;
 	}
 
 	public String getEmail() {
@@ -196,6 +198,7 @@ public class Attendee {
 		this.country = country;
 	}
 
+	@XmlElement(name = "scannedby_id")
 	public String getEmployee() {
 		return employee;
 	}
@@ -204,22 +207,24 @@ public class Attendee {
 		this.employee = employee;
 	}
 
-	public Date getScannedat() {
+	@JsonDeserialize(using = YYYYMMDDHHMMSSDateDeserializer.class)
+	@JsonSerialize(using = YYYYMMDDHHMMSSDateSerializer.class)
+	@XmlElement(name = "scantime")
+	public Date getScannedAt() {
 		return scannedAt;
 	}
 
-	@JsonDeserialize(using = YYYYMMDDHHMMDateDeserializer.class)
-	@JsonSerialize(using = YYYYMMDDHHMMDateSerializer.class)
 	public void setScannedAt(Date scannedAt) {
 		this.scannedAt = scannedAt;
 	}
 
+	@JsonDeserialize(using = YYYYMMDDHHMMSSDateDeserializer.class)
+	@JsonSerialize(using = YYYYMMDDHHMMSSDateSerializer.class)
+	@XmlElement(name = "updatetime")
 	public Date getModifiedAt() {
 		return modifiedAt;
 	}
 
-	@JsonDeserialize(using = YYYYMMDDHHMMDateDeserializer.class)
-	@JsonSerialize(using = YYYYMMDDHHMMDateSerializer.class)
 	public void setModifiedAt(Date modifiedAt) {
 		this.modifiedAt = modifiedAt;
 	}
@@ -248,20 +253,13 @@ public class Attendee {
 		this.notes = notes;
 	}
 
-	public String getQrCodeSignature() {
-		return qrCodeSignature;
+	@XmlElement(name = "synctime")
+	public long getSyncTime() {
+		return syncTime;
 	}
 
-	public void setQrCodeSignature(String qrCodeSignature) {
-		this.qrCodeSignature = qrCodeSignature;
-	}
-
-	public long getSyncID() {
-		return syncID;
-	}
-
-	public void setSyncID(long syncID) {
-		this.syncID = syncID;
+	public void setSyncTime(long syncID) {
+		this.syncTime = syncID;
 	}
 
 	public boolean isFollowup() {
@@ -270,5 +268,39 @@ public class Attendee {
 
 	public void setFollowup(boolean followup) {
 		this.followup = followup;
+	}
+
+	@XmlElement(name = "fn")
+	public String getFullname() {
+		return fn;
+	}
+
+	public void setFullname(String fn) {
+		this.fn = fn;
+	}
+
+	@XmlElement(name = "adr")
+	public String getAddress() {
+		return adr;
+	}
+
+	public void setAddress(String adr) {
+		this.adr = adr;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 }

@@ -13,6 +13,10 @@
     <description>JAX-RS Tools Generated - Do not modify</description>
     <servlet-name>JAX-RS Servlet</servlet-name>
     <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+    <init-param>
+      <param-name>com.sun.jersey.config.feature.TracePerRequest</param-name>
+      <param-value>true</param-value>      
+    </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
@@ -30,7 +34,7 @@
     </web-resource-collection>
     <auth-constraint>
       <description></description>
-      <role-name>myeclipseWeb</role-name>
+      <role-name>confuser</role-name>
     </auth-constraint>
   </security-constraint>
   <login-config>
@@ -42,6 +46,6 @@
     </form-login-config>
   </login-config>
   <security-role>
-    <role-name>myeclipseWeb</role-name>
+    <role-name>confuser</role-name>
   </security-role>
 </web-app>

@@ -6,10 +6,14 @@
 		<properties>
 			<property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>
 			<property name="eclipselink.ddl-generation.output-mode" value="database"/>
+			<property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
+			<property name="javax.persistence.jdbc.url" value="jdbc:derby:confdb;create=true" />
+			<!-- 
 			<property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/myeclipse" />
 			<property name="javax.persistence.jdbc.user" value="classiccars" />
 			<property name="javax.persistence.jdbc.password" value="myeclipse"/>
-		</properties>
+ 			-->
+ 		</properties>
 	</persistence-unit>
 </persistence>

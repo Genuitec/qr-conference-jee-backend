@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManager;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -33,7 +32,6 @@ import com.genuitec.qfconf.backend.model.DataTableResult;
 
 @Produces({ "application/xml", "application/json" })
 @Path("attendees")
-@RolesAllowed({ "myeclipseWeb" })
 public class AttendeesResource {
 
 	private Logger log = Logger.getLogger(AttendeesResource.class.getName());
@@ -75,7 +73,7 @@ public class AttendeesResource {
 			rowData.add(describeFollowup(attendee));
 			rowData.add(describeRating(attendee));
 			rowData.add(describeTags(attendee));
-			rowData.add(dateFormat.format(attendee.getScannedat()));
+			rowData.add(dateFormat.format(attendee.getScannedAt()));
 			rowData.add(attendee.getEmployee());
 			rowData.add(describeNotes(attendee));
 			result.addRowData(rowData);
@@ -114,13 +112,20 @@ public class AttendeesResource {
 	public AddResult addAttendee(Attendee attendee) {
 		EntityManager em = ConferenceModel.newEntityManager();
 		try {
+			if (attendee.getId() == null || attendee.getId().length() == 0) {
+				attendee.setId("manual-" + attendee.getFirstName() + "_"
+						+ attendee.getLastName());
+			}
+			if (attendee.getFullname() != null)
+				attendee.setFullname(attendee.getFirstName() + " "
+						+ attendee.getLastName());
 			em.getTransaction().begin();
 			em.persist(attendee);
 			em.getTransaction().commit();
 			log.log(Level.INFO, "Added attendee with ID {0}: {1} {2}",
 					new Object[] { attendee.getId(), attendee.getFirstName(),
 							attendee.getLastName() });
-			return new AddResult(true, attendee.getId());
+			return new AddResult(true, -1);
 		} finally {
 			em.close();
 		}
