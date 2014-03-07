@@ -56,6 +56,9 @@ public class MobileService {
 		LoginResult result = new LoginResult();
 		try {
 			request.getSession(true); // force session to exist
+			request.getSession().setMaxInactiveInterval(-1);
+			request.getSession().setAttribute("logged-on-at",
+					System.currentTimeMillis());
 			request.login(user, password);
 			result.setSession(request.getSession().getId());
 			result.setLoggedIn(true);
@@ -86,6 +89,9 @@ public class MobileService {
 
 		if (request.getUserPrincipal() == null)
 			throw new WebApplicationException(403);
+
+		request.getSession().setAttribute("last-access-at",
+				System.currentTimeMillis());
 
 		EntityManager em = ConferenceModel.newEntityManager();
 		try {
