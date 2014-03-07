@@ -11,6 +11,7 @@
 package com.genuitec.qfconf.backend.model;
 
 import java.util.Date;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,6 +20,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -38,6 +40,7 @@ public class Conference implements Comparable<Conference> {
 	@Temporal(TemporalType.DATE)
 	private Date endsOn;
 	private long syncTime;
+	private Set<String> tags;
 
 	public int getId() {
 		return id;
@@ -89,5 +92,15 @@ public class Conference implements Comparable<Conference> {
 
 	public void setSyncTime(long syncTime) {
 		this.syncTime = syncTime;
+	}
+
+	@XmlJavaTypeAdapter(TagsAdapter.class)
+	@XmlElement(name = "tags")
+	public Set<String> getTags() {
+		return tags;
+	}
+
+	public void setTags(Set<String> tags) {
+		this.tags = tags;
 	}
 }

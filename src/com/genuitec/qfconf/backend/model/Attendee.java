@@ -19,6 +19,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.eclipse.persistence.annotations.Index;
 
@@ -237,6 +238,8 @@ public class Attendee {
 		this.rating = rating;
 	}
 
+	@XmlJavaTypeAdapter(TagsAdapter.class)
+	@XmlElement(name = "tags")
 	public SortedSet<String> getTags() {
 		return tags;
 	}

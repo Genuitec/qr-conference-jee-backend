@@ -115,11 +115,14 @@ $.fn.dataTableExt.oApi.fnReloadAjax = function ( oSettings, sNewSource, fnCallba
 				<p class="name">
 					<input type="text" name="name" id="name" size="25"><label class="right" for="name">Conference Name</label>
 				</p>
-				<p class="startsOn">
-					<input type="text"name="startsOn" id="startsOn" size="10"><label class="right" for="startsOn">Starts On (yyyy/mm/dd)</label>
+				<p class="time">
+					<input type="text"name="time" id="time" size="10"><label class="right" for="time">Starts On (yyyy/mm/dd)</label>
 				</p>
-				<p class="endsOn">
-					<input type="text" name="endsOn" id="endsOn" size="10"><label class="right" for="endsOn">Ends On (mm/dd/yyyy)</label>
+				<p class="endtime">
+					<input type="text" name="endtime" id="endtime" size="10"><label class="right" for="endtime">Ends On (mm/dd/yyyy)</label>
+				</p>
+				<p class="tags">
+					<input type="text" name="tags" id="tags" size="10"><label class="right" for="tags">Tags (comma-separated)</label>
 				</p>
 			</fieldset>
 		</form>
@@ -153,9 +156,10 @@ $.fn.dataTableExt.oApi.fnReloadAjax = function ( oSettings, sNewSource, fnCallba
 		
 		$(function() {
 			var name = $("#name");
-			var startsOn = $("#startsOn");
-			var endsOn = $("#endsOn");
-			var allFields = $([]).add(name).add(startsOn).add(startsOn);
+			var time = $("#time");
+			var endtime = $("#endtime");
+			var tags = $("#tags");
+			var allFields = $([]).add(name).add(time).add(time);
 			var tips = $(".validateTips");
 	
 			function updateTips(t) {
@@ -188,7 +192,7 @@ $.fn.dataTableExt.oApi.fnReloadAjax = function ( oSettings, sNewSource, fnCallba
 	
 			$("#dialog").dialog({
 				autoOpen : false,
-				height : 325,
+				height : 380,
 				width : 425,
 				modal : true,
 				buttons : {
@@ -197,9 +201,10 @@ $.fn.dataTableExt.oApi.fnReloadAjax = function ( oSettings, sNewSource, fnCallba
 						allFields.removeClass("ui-state-error");
 	
 						bValid = bValid && checkLength(name, "name", 3, 40);
-						bValid = bValid && checkRegexp(startsOn, /^(19|20)\d{2}\/(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])$/i, "Starts On must be in YYYY/MM/DD format.");
-						bValid = bValid && checkRegexp(endsOn, /^(19|20)\d{2}\/(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])$/i, "Stops On must be in YYYY/MM/DD format.");
-	
+						bValid = bValid && checkRegexp(time, /^(19|20)\d{2}\/(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])$/i, "Starts On must be in YYYY/MM/DD format.");
+						bValid = bValid && checkRegexp(endtime, /^(19|20)\d{2}\/(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])$/i, "Stops On must be in YYYY/MM/DD format.");
+						bValid = bValid && checkLength(tags, "tags", 3, 255);
+
 						if (bValid) {
 							var serialized = $("#conferenceForm").serializeArray();
 					        var s = '';
@@ -237,6 +242,9 @@ $.fn.dataTableExt.oApi.fnReloadAjax = function ( oSettings, sNewSource, fnCallba
 	
 			$("#add-conference").button().click(function() {
 				$("#dialog").dialog("open");
+			});
+			$("#logout").button().click(function() {
+				window.location.href="logout/";
 			});
 		});
 		
@@ -291,6 +299,7 @@ $.fn.dataTableExt.oApi.fnReloadAjax = function ( oSettings, sNewSource, fnCallba
 	</script>
 	<p>
 		<button id="add-conference">Add Conference</button>
+		<button id="logout">Log Out</button>
 	</p>
 </body>
 </html>
