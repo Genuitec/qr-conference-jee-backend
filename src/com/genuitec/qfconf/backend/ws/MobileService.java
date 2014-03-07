@@ -10,7 +10,9 @@
  *******************************************************************************/
 package com.genuitec.qfconf.backend.ws;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +30,7 @@ import com.genuitec.qfconf.backend.model.Attendee;
 import com.genuitec.qfconf.backend.model.Conference;
 import com.genuitec.qfconf.backend.model.ConferenceModel;
 import com.genuitec.qfconf.backend.model.LoginResult;
+import com.genuitec.qfconf.backend.model.SyncLists;
 import com.genuitec.qfconf.backend.model.SyncRequest;
 import com.genuitec.qfconf.backend.model.SyncResponse;
 import com.genuitec.qfconf.backend.model.SyncResponseData;
@@ -86,6 +89,9 @@ public class MobileService {
 
 		EntityManager em = ConferenceModel.newEntityManager();
 		try {
+
+			updateAttendees(em, sync);
+
 			List<Conference> confs = em.createQuery(
 					"SELECT c FROM Conference c WHERE c.syncTime > "
 							+ sync.getInfo().getTime()
@@ -111,6 +117,50 @@ public class MobileService {
 			return response;
 		} finally {
 			em.close();
+		}
+	}
+
+	private void updateAttendees(EntityManager em, SyncRequest sync) {
+		long synctime = System.currentTimeMillis();
+
+		SyncLists<Attendee> scansData = sync.getData().getScans();
+		if (scansData != null) {
+			Map<String, Attendee> updatedAttendees = new HashMap<String, Attendee>();
+			mergeIn(updatedAttendees, scansData.getCreate());
+			mergeIn(updatedAttendees, scansData.getUpdate());
+			if (!updatedAttendees.isEmpty()) {
+				em.getTransaction().begin();
+				for (Attendee next : updatedAttendees.values())
+					updateOrCreate(em, next, synctime);
+				em.getTransaction().commit();
+			}
+		}
+	}
+
+	private void updateOrCreate(EntityManager em, Attendee latest, long synctime) {
+		Attendee existing = em.find(Attendee.class, latest.getId());
+		if (existing == null) {
+			latest.setSyncTime(synctime);
+			em.persist(latest);
+		} else if (existing.getSyncTime() != latest.getSyncTime()) {
+			existing.mergeWith(latest);
+			existing.setSyncTime(synctime);
+			em.persist(existing);
+		} else {
+			existing.updateTo(latest);
+			existing.setSyncTime(synctime);
+			em.persist(existing);
+		}
+	}
+
+	private void mergeIn(Map<String, Attendee> updatedAttendees,
+			List<Attendee> attendees) {
+		for (Attendee next : attendees) {
+			Attendee current = updatedAttendees.get(next.getId());
+			if (current == null
+					|| current.getModifiedAt().compareTo(next.getModifiedAt()) < 0) {
+				updatedAttendees.put(next.getId(), next);
+			}
 		}
 	}
 

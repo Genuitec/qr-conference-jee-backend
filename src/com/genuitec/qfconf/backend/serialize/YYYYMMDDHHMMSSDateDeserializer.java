@@ -16,12 +16,17 @@ public class YYYYMMDDHHMMSSDateDeserializer extends JsonDeserializer<Date> {
 			DeserializationContext deserializationcontext) throws IOException,
 			JsonProcessingException {
 
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		String date = jsonparser.getText();
 		try {
 			return format.parse(date);
 		} catch (ParseException e) {
-			throw new RuntimeException(e);
+			format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			try {
+				return format.parse(date);
+			} catch (ParseException e2) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 }

@@ -50,6 +50,9 @@
   <security-role>
     <role-name>confuser</role-name>
   </security-role>
+  <session-config>
+     <session-timeout>-1</session-timeout>
+  </session-config>
   <filter>
     <filter-name>add-cross-domain</filter-name>
     <filter-class>com.genuitec.qfconf.backend.ws.AddCrossDomainResponseHeader</filter-class>

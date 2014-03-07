@@ -24,13 +24,18 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.eclipse.persistence.annotations.Index;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.genuitec.qfconf.backend.serialize.RatingsDeserialize;
+import com.genuitec.qfconf.backend.serialize.RatingsSerialize;
 import com.genuitec.qfconf.backend.serialize.YYYYMMDDHHMMSSDateDeserializer;
 import com.genuitec.qfconf.backend.serialize.YYYYMMDDHHMMSSDateSerializer;
 
 @Entity
 @XmlRootElement
+@JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties({ "sid", "table_name", "time", "rowcreated", "row_id",
 		"syncupdatetime", "scannedby_name" })
 public class Attendee {
@@ -67,7 +72,7 @@ public class Attendee {
 	private Date scannedAt;
 	@Temporal(TemporalType.DATE)
 	private Date modifiedAt;
-	private Rating rating;
+	private Rating rating = Rating.cold;
 	private SortedSet<String> tags;
 	private String notes;
 	private boolean followup;
@@ -230,6 +235,8 @@ public class Attendee {
 		this.modifiedAt = modifiedAt;
 	}
 
+	@JsonSerialize(using = RatingsSerialize.class)
+	@JsonDeserialize(using = RatingsDeserialize.class)
 	public Rating getRating() {
 		return rating;
 	}
@@ -305,5 +312,33 @@ public class Attendee {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public void updateTo(Attendee latest) {
+		this.modifiedAt = latest.modifiedAt;
+		this.rating = latest.rating;
+		this.tags = latest.tags;
+		this.notes = latest.notes;
+		this.followup = latest.followup;
+	}
+
+	public void mergeWith(Attendee latest) {
+		if (this.scannedAt.compareTo(latest.scannedAt) > 0)
+			this.scannedAt = latest.scannedAt;
+		if (this.modifiedAt.compareTo(latest.modifiedAt) < 0)
+			this.modifiedAt = latest.modifiedAt;
+		if (this.rating == null || this.rating.compareTo(latest.rating) < 0)
+			this.rating = latest.rating;
+		if (this.tags != null && latest.tags != null)
+			this.tags.addAll(latest.tags);
+		else if (latest.tags != null)
+			this.tags = latest.tags;
+		if (this.notes != null && this.notes.equals(latest.notes)) {
+			// nothing to merge
+		} else if (this.notes != null && this.notes.length() > 0
+				&& latest.notes != null) {
+			this.notes += "\n\n" + latest.notes;
+		}
+		this.followup = latest.followup || this.followup;
 	}
 }

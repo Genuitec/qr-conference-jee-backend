@@ -84,7 +84,7 @@ public class AttendeesResource {
 	@GET
 	@Path("{conference}/{attendee}")
 	public Attendee getAttendee(@PathParam("conference") int conferenceID,
-			@PathParam("attendee") int attendeeID) {
+			@PathParam("attendee") String attendeeID) {
 		EntityManager em = ConferenceModel.newEntityManager();
 		try {
 			Attendee attendee = em.find(Attendee.class, attendeeID);
@@ -151,10 +151,12 @@ public class AttendeesResource {
 
 	private String describeTags(Attendee attendee) {
 		String tags = "";
-		for (String next : attendee.getTags()) {
-			if (tags.length() > 0)
-				tags += ", ";
-			tags += next;
+		if (attendee.getTags() != null) {
+			for (String next : attendee.getTags()) {
+				if (tags.length() > 0)
+					tags += ", ";
+				tags += next;
+			}
 		}
 		return tags;
 	}

@@ -19,11 +19,11 @@
 		return;
 	}
 	String id = request.getParameter("id");
-	if (!Validate.isInt(id)) {
+	if (!Validate.isNonEmpty(id)) {
 		response.sendRedirect("../");
 		return;
 	}
-	Attendee attendee = new AttendeesResource().getAttendee(Validate.getInt(conf), Validate.getInt(id));
+	Attendee attendee = new AttendeesResource().getAttendee(Validate.getInt(conf), id);
 	if (attendee == null) {
 		response.sendRedirect("../");
 		return;
