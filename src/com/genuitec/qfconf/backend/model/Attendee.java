@@ -24,8 +24,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.eclipse.persistence.annotations.Index;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.genuitec.qfconf.backend.serialize.BooleanDeserializer;
@@ -37,7 +35,6 @@ import com.genuitec.qfconf.backend.serialize.YYYYMMDDHHMMSSDateSerializer;
 
 @Entity
 @XmlRootElement
-@JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties({ "sid", "table_name", "time", "rowcreated", "row_id",
 		"syncupdatetime", "scannedby_name" })
 public class Attendee {
@@ -98,6 +95,10 @@ public class Attendee {
 
 	@XmlElement(name = "firstname")
 	public String getFirstName() {
+		if (lastName == null && firstName == null && fn != null
+				&& fn.indexOf(' ') > 0) {
+			return fn.substring(0, fn.indexOf(' '));
+		}
 		return firstName;
 	}
 
@@ -107,6 +108,10 @@ public class Attendee {
 
 	@XmlElement(name = "lastname")
 	public String getLastName() {
+		if (lastName == null && firstName == null && fn != null
+				&& fn.indexOf(' ') > 0) {
+			return fn.substring(fn.indexOf(' ') + 1);
+		}
 		return lastName;
 	}
 
