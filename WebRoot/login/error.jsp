@@ -12,6 +12,9 @@
 %>
 <%@ page language="java" import="java.util.*" pageEncoding="ISO-8859-1"%>
 <%
+	response.setHeader("Access-Control-Allow-Origin", "*");
+	response.setHeader("Access-Control-Allow-Methods", "GET, POST");
+
 	String path = request.getContextPath();
 	String basePath = request.getScheme() + "://"
 			+ request.getServerName() + ":" + request.getServerPort()

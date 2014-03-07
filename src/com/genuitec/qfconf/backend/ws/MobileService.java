@@ -11,20 +11,23 @@
 package com.genuitec.qfconf.backend.ws;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 
 import com.genuitec.qfconf.backend.model.Attendee;
 import com.genuitec.qfconf.backend.model.Conference;
 import com.genuitec.qfconf.backend.model.ConferenceModel;
+import com.genuitec.qfconf.backend.model.LoginResult;
 import com.genuitec.qfconf.backend.model.SyncRequest;
 import com.genuitec.qfconf.backend.model.SyncResponse;
 import com.genuitec.qfconf.backend.model.SyncResponseData;
@@ -35,28 +38,63 @@ import com.genuitec.qfconf.backend.model.SyncResponseInfo;
 @Path("mobile")
 public class MobileService {
 
-	private Logger log = Logger.getLogger(MobileService.class.getName());
+	@Context
+	private HttpServletRequest request;
+	@Context
+	private HttpServletResponse response;
+
+	@POST
+	@Consumes("application/x-www-form-urlencoded")
+	@Path("login")
+	public LoginResult login(@FormParam("j_username") String user,
+			@FormParam("j_password") String password) {
+		addCrossDomainHeaders();
+
+		LoginResult result = new LoginResult();
+		try {
+			request.getSession(true); // force session to exist
+			request.login(user, password);
+			result.setSession(request.getSession().getId());
+			result.setLoggedIn(true);
+		} catch (Exception e) {
+			result.setLoggedIn(false);
+			result.setReason("Incorrect username or password.");
+		}
+		return result;
+	}
 
 	@GET
-	@Path("login")
-	public String login() {
-		return "already-logged-in";
+	@Path("logout")
+	public LoginResult logout() {
+		addCrossDomainHeaders();
+
+		LoginResult result = new LoginResult();
+		try {
+			request.logout();
+		} catch (Exception e) {
+		}
+		return result;
 	}
 
 	@POST
 	@Path("sync")
-	public SyncResponse sync(SyncRequest request) {
+	public SyncResponse sync(SyncRequest sync) {
+		addCrossDomainHeaders();
+
+		if (request.getUserPrincipal() == null)
+			throw new WebApplicationException(403);
+
 		EntityManager em = ConferenceModel.newEntityManager();
 		try {
 			List<Conference> confs = em.createQuery(
 					"SELECT c FROM Conference c WHERE c.syncTime > "
-							+ request.getInfo().getTime()
+							+ sync.getInfo().getTime()
 							+ " ORDER BY c.startsOn DESC", Conference.class)
 					.getResultList();
 
 			List<Attendee> scans = em.createQuery(
 					"SELECT a FROM Attendee a WHERE a.syncTime > "
-							+ request.getInfo().getTime()
+							+ sync.getInfo().getTime()
 							+ " ORDER BY a.lastName, a.firstName",
 					Attendee.class).getResultList();
 
@@ -76,46 +114,10 @@ public class MobileService {
 		}
 	}
 
-	@GET
-	@Path("{conference}/{attendee}")
-	public Attendee getAttendee(@PathParam("conference") int conferenceID,
-			@PathParam("attendee") int attendeeID) {
-		EntityManager em = ConferenceModel.newEntityManager();
-		try {
-			Attendee attendee = em.find(Attendee.class, attendeeID);
-			if (attendee == null)
-				log.log(Level.INFO, "Unable to find attendee with ID {0}",
-						new Object[] { attendeeID });
-			else if (attendee.getConferenceID() != conferenceID)
-				log.log(Level.INFO,
-						"Mismatch for conference ID for attendee with ID {0}",
-						new Object[] { attendeeID });
-			else
-				log.log(Level.INFO, "Found attendee with ID {0}: {1} {2}",
-						new Object[] { attendeeID, attendee.getFirstName(),
-								attendee.getLastName() });
-			return attendee;
-		} finally {
-			em.close();
-		}
-	}
-
-	@POST
-	@Path("add")
-	@Consumes("application/xml")
-	@Produces("text/html")
-	public String addAttendee(Attendee attendee) {
-		EntityManager em = ConferenceModel.newEntityManager();
-		try {
-			em.getTransaction().begin();
-			em.persist(attendee);
-			em.getTransaction().commit();
-			log.log(Level.INFO, "Added attendee with ID {0}: {1} {2}",
-					new Object[] { attendee.getId(), attendee.getFirstName(),
-							attendee.getLastName() });
-			return "added-attendee: " + attendee.getId();
-		} finally {
-			em.close();
-		}
+	private void addCrossDomainHeaders() {
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		response.setHeader("Access-Control-Allow-Methods", "GET, POST");
+		response.setHeader("Access-Control-Allow-Headers",
+				"accept, content-type");
 	}
 }

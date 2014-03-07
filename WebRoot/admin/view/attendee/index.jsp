@@ -68,10 +68,6 @@
 	        	out.println("<label class='details'>Cellphone</label>"+attendee.getCell()+"<br/>");
 	        	number = true;
 	    	}
-	    	if (Validate.isNonEmpty(attendee.getFax())) {
-	        	out.println("<label class='details'>Fax Line</label>"+attendee.getFax()+"<br/>");
-	        	number = true;
-	    	}
 	    	if (!number) {
 	    		out.println("<label class='details'>Phones</label><i style='color: #9999aa'>Not Available</i><br/>");
 	    	}

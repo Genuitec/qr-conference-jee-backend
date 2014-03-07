@@ -24,11 +24,13 @@
     <url-pattern>/ws/*</url-pattern>
   </servlet-mapping>
   <security-constraint>
-    <display-name>Full Lockdown</display-name>
+    <display-name>Conference Access</display-name>
     <web-resource-collection>
       <web-resource-name>wrcoll</web-resource-name>
       <description></description>
-      <url-pattern>/ws/*</url-pattern>
+      <url-pattern>/ws/conferences*</url-pattern>
+      <url-pattern>/ws/attendees*</url-pattern>
+      <url-pattern>/ws/sync*</url-pattern>
       <url-pattern>/admin/*</url-pattern>
       <url-pattern>/login/*</url-pattern>
     </web-resource-collection>
@@ -48,4 +50,12 @@
   <security-role>
     <role-name>confuser</role-name>
   </security-role>
+  <filter>
+    <filter-name>add-cross-domain</filter-name>
+    <filter-class>com.genuitec.qfconf.backend.ws.AddCrossDomainResponseHeader</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>add-cross-domain</filter-name>
+    <url-pattern>/ws/mobile/*</url-pattern>
+  </filter-mapping>   
 </web-app>

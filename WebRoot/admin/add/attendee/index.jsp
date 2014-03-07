@@ -73,7 +73,6 @@
 			// contact phone numbers
 			attendee.setTelephone(request.getParameter("telephone"));
 			attendee.setCell(request.getParameter("cell"));
-			attendee.setFax(request.getParameter("fax"));
 
 			// contact address
 			attendee.setStreet(request.getParameter("street"));
