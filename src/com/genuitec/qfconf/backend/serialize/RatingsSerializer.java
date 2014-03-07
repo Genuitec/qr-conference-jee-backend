@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.genuitec.qfconf.backend.model.Rating;
 
-public class RatingsSerialize extends JsonSerializer<Rating> {
+public class RatingsSerializer extends JsonSerializer<Rating> {
 
 	@Override
 	public void serialize(Rating rating, JsonGenerator generator,

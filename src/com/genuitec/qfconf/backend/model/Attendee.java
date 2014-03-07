@@ -28,8 +28,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.genuitec.qfconf.backend.serialize.RatingsDeserialize;
-import com.genuitec.qfconf.backend.serialize.RatingsSerialize;
+import com.fasterxml.jackson.databind.ser.std.BooleanSerializer;
+import com.genuitec.qfconf.backend.serialize.BooleanDeserializer;
+import com.genuitec.qfconf.backend.serialize.RatingsDeserializer;
+import com.genuitec.qfconf.backend.serialize.RatingsSerializer;
 import com.genuitec.qfconf.backend.serialize.YYYYMMDDHHMMSSDateDeserializer;
 import com.genuitec.qfconf.backend.serialize.YYYYMMDDHHMMSSDateSerializer;
 
@@ -235,8 +237,8 @@ public class Attendee {
 		this.modifiedAt = modifiedAt;
 	}
 
-	@JsonSerialize(using = RatingsSerialize.class)
-	@JsonDeserialize(using = RatingsDeserialize.class)
+	@JsonSerialize(using = RatingsSerializer.class)
+	@JsonDeserialize(using = RatingsDeserializer.class)
 	public Rating getRating() {
 		return rating;
 	}
@@ -272,6 +274,8 @@ public class Attendee {
 		this.syncTime = syncID;
 	}
 
+	@JsonSerialize(using = BooleanSerializer.class)
+	@JsonDeserialize(using = BooleanDeserializer.class)
 	public boolean isFollowup() {
 		return followup;
 	}

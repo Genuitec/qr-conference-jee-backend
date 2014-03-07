@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.genuitec.qfconf.backend.model.Rating;
 
-public class RatingsDeserialize extends JsonDeserializer<Rating> {
+public class RatingsDeserializer extends JsonDeserializer<Rating> {
 
 	@Override
 	public Rating deserialize(JsonParser parser, DeserializationContext context)
