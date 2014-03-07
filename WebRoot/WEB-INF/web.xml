@@ -28,9 +28,9 @@
     <web-resource-collection>
       <web-resource-name>wrcoll</web-resource-name>
       <description></description>
-      <url-pattern>/ws/conferences*</url-pattern>
-      <url-pattern>/ws/attendees*</url-pattern>
-      <url-pattern>/ws/sync*</url-pattern>
+      <url-pattern>/ws/conferences/*</url-pattern>
+      <url-pattern>/ws/attendees/*</url-pattern>
+      <url-pattern>/ws/sync/*</url-pattern>
       <url-pattern>/admin/*</url-pattern>
       <url-pattern>/login/*</url-pattern>
     </web-resource-collection>
