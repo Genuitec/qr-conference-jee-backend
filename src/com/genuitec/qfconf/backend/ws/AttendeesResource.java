@@ -162,6 +162,8 @@ public class AttendeesResource {
 	}
 
 	private String describeRating(Attendee attendee) {
+		if (attendee.getRating() == null)
+			return "Cold";
 		String rating = attendee.getRating().toString();
 		if (rating == null)
 			rating = "cold";

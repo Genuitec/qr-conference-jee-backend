@@ -67,6 +67,7 @@ public class Attendee {
 	private String country;
 	private String type;
 	private String version;
+	private String qrcodetext;
 
 	// data specified by employee at conference
 	private String employee;
@@ -383,5 +384,15 @@ public class Attendee {
 			this.notes += "\n\n" + latest.notes;
 		}
 		this.followup = latest.followup || this.followup;
+	}
+
+	@XmlElement(name = "qrcodetext")
+	@JsonInclude(Include.ALWAYS)
+	public String getQRCodeText() {
+		return qrcodetext;
+	}
+
+	public void setQRCodeText(String qrcodetext) {
+		this.qrcodetext = qrcodetext;
 	}
 }
