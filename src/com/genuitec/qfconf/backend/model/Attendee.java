@@ -24,6 +24,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.eclipse.persistence.annotations.Index;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.genuitec.qfconf.backend.serialize.BooleanDeserializer;
@@ -37,6 +39,7 @@ import com.genuitec.qfconf.backend.serialize.YYYYMMDDHHMMSSDateSerializer;
 @XmlRootElement
 @JsonIgnoreProperties({ "sid", "table_name", "time", "rowcreated", "row_id",
 		"syncupdatetime", "scannedby_name" })
+@JsonInclude(Include.ALWAYS)
 public class Attendee {
 
 	// identifying data
@@ -76,6 +79,7 @@ public class Attendee {
 	private String notes;
 	private boolean followup;
 
+	@JsonInclude(Include.ALWAYS)
 	public String getId() {
 		return id;
 	}
@@ -85,6 +89,7 @@ public class Attendee {
 	}
 
 	@XmlElement(name = "conference_id")
+	@JsonInclude(Include.ALWAYS)
 	public int getConferenceID() {
 		return conferenceID;
 	}
@@ -94,10 +99,13 @@ public class Attendee {
 	}
 
 	@XmlElement(name = "firstname")
+	@JsonInclude(Include.ALWAYS)
 	public String getFirstName() {
-		if (lastName == null && firstName == null && fn != null
-				&& fn.indexOf(' ') > 0) {
-			return fn.substring(0, fn.indexOf(' '));
+		if (lastName == null && firstName == null && fn != null) {
+			if (fn.indexOf(' ') > 0)
+				return fn.substring(0, fn.indexOf(' ')).trim();
+			if (fn.indexOf(',') > 0)
+				return fn.substring(fn.indexOf(',') + 1).trim();
 		}
 		return firstName;
 	}
@@ -107,10 +115,13 @@ public class Attendee {
 	}
 
 	@XmlElement(name = "lastname")
+	@JsonInclude(Include.ALWAYS)
 	public String getLastName() {
-		if (lastName == null && firstName == null && fn != null
-				&& fn.indexOf(' ') > 0) {
-			return fn.substring(fn.indexOf(' ') + 1);
+		if (lastName == null && firstName == null && fn != null) {
+			if (fn.indexOf(' ') > 0)
+				return fn.substring(fn.indexOf(' ') + 1);
+			if (fn.indexOf(',') > 0)
+				return fn.substring(0, fn.indexOf(',')).trim();
 		}
 		return lastName;
 	}
@@ -120,6 +131,7 @@ public class Attendee {
 	}
 
 	@XmlElement(name = "org")
+	@JsonInclude(Include.ALWAYS)
 	public String getOrganization() {
 		return organization;
 	}
@@ -129,6 +141,7 @@ public class Attendee {
 	}
 
 	@XmlElement(name = "title")
+	@JsonInclude(Include.ALWAYS)
 	public String getTitle() {
 		return title;
 	}
@@ -138,6 +151,7 @@ public class Attendee {
 	}
 
 	@XmlElement(name = "tel")
+	@JsonInclude(Include.ALWAYS)
 	public String getTelephone() {
 		return telephone;
 	}
@@ -146,7 +160,8 @@ public class Attendee {
 		this.telephone = telephone;
 	}
 
-	@XmlElement(name = "cell")
+	@XmlElement(name = "cel")
+	@JsonInclude(Include.ALWAYS)
 	public String getCell() {
 		return cell;
 	}
@@ -155,6 +170,7 @@ public class Attendee {
 		this.cell = cell;
 	}
 
+	@JsonInclude(Include.ALWAYS)
 	public String getEmail() {
 		return email;
 	}
@@ -163,6 +179,7 @@ public class Attendee {
 		this.email = email;
 	}
 
+	@JsonInclude(Include.ALWAYS)
 	public String getWebsite() {
 		return website;
 	}
@@ -171,6 +188,7 @@ public class Attendee {
 		this.website = website;
 	}
 
+	@JsonInclude(Include.ALWAYS)
 	public String getStreet() {
 		return street;
 	}
@@ -179,6 +197,7 @@ public class Attendee {
 		this.street = street;
 	}
 
+	@JsonInclude(Include.ALWAYS)
 	public String getCity() {
 		return city;
 	}
@@ -187,6 +206,7 @@ public class Attendee {
 		this.city = city;
 	}
 
+	@JsonInclude(Include.ALWAYS)
 	public String getState() {
 		return state;
 	}
@@ -195,6 +215,7 @@ public class Attendee {
 		this.state = state;
 	}
 
+	@JsonInclude(Include.ALWAYS)
 	public String getPostcode() {
 		return postcode;
 	}
@@ -203,6 +224,7 @@ public class Attendee {
 		this.postcode = postcode;
 	}
 
+	@JsonInclude(Include.ALWAYS)
 	public String getCountry() {
 		return country;
 	}
@@ -212,6 +234,7 @@ public class Attendee {
 	}
 
 	@XmlElement(name = "scannedby_id")
+	@JsonInclude(Include.ALWAYS)
 	public String getEmployee() {
 		return employee;
 	}
@@ -223,6 +246,7 @@ public class Attendee {
 	@JsonDeserialize(using = YYYYMMDDHHMMSSDateDeserializer.class)
 	@JsonSerialize(using = YYYYMMDDHHMMSSDateSerializer.class)
 	@XmlElement(name = "scantime")
+	@JsonInclude(Include.ALWAYS)
 	public Date getScannedAt() {
 		return scannedAt;
 	}
@@ -234,6 +258,7 @@ public class Attendee {
 	@JsonDeserialize(using = YYYYMMDDHHMMSSDateDeserializer.class)
 	@JsonSerialize(using = YYYYMMDDHHMMSSDateSerializer.class)
 	@XmlElement(name = "updatetime")
+	@JsonInclude(Include.ALWAYS)
 	public Date getModifiedAt() {
 		return modifiedAt;
 	}
@@ -244,6 +269,7 @@ public class Attendee {
 
 	@JsonSerialize(using = RatingsSerializer.class)
 	@JsonDeserialize(using = RatingsDeserializer.class)
+	@JsonInclude(Include.ALWAYS)
 	public Rating getRating() {
 		return rating;
 	}
@@ -254,6 +280,7 @@ public class Attendee {
 
 	@XmlJavaTypeAdapter(TagsAdapter.class)
 	@XmlElement(name = "tags")
+	@JsonInclude(Include.ALWAYS)
 	public SortedSet<String> getTags() {
 		return tags;
 	}
@@ -262,6 +289,7 @@ public class Attendee {
 		this.tags = tags;
 	}
 
+	@JsonInclude(Include.ALWAYS)
 	public String getNotes() {
 		return notes;
 	}
@@ -271,6 +299,7 @@ public class Attendee {
 	}
 
 	@XmlElement(name = "synctime")
+	@JsonInclude(Include.ALWAYS)
 	public long getSyncTime() {
 		return syncTime;
 	}
@@ -281,6 +310,7 @@ public class Attendee {
 
 	@JsonSerialize(using = BooleanSerializer.class)
 	@JsonDeserialize(using = BooleanDeserializer.class)
+	@JsonInclude(Include.ALWAYS)
 	public boolean isFollowup() {
 		return followup;
 	}
@@ -290,6 +320,7 @@ public class Attendee {
 	}
 
 	@XmlElement(name = "fn")
+	@JsonInclude(Include.ALWAYS)
 	public String getFullname() {
 		return fn;
 	}
@@ -299,6 +330,7 @@ public class Attendee {
 	}
 
 	@XmlElement(name = "adr")
+	@JsonInclude(Include.ALWAYS)
 	public String getAddress() {
 		return adr;
 	}
@@ -307,6 +339,7 @@ public class Attendee {
 		this.adr = adr;
 	}
 
+	@JsonInclude(Include.ALWAYS)
 	public String getVersion() {
 		return version;
 	}
@@ -315,6 +348,7 @@ public class Attendee {
 		this.version = version;
 	}
 
+	@JsonInclude(Include.ALWAYS)
 	public String getType() {
 		return type;
 	}
