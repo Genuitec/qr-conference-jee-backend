@@ -55,6 +55,9 @@ public class MobileService {
 
 		LoginResult result = new LoginResult();
 		try {
+			if (request.getUserPrincipal() != null)
+				request.logout();
+
 			request.getSession(true); // force session to exist
 			request.getSession().setMaxInactiveInterval(-1);
 			request.getSession().setAttribute("logged-on-at",
