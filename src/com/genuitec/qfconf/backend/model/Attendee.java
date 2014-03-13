@@ -272,6 +272,8 @@ public class Attendee {
 	@JsonDeserialize(using = RatingsDeserializer.class)
 	@JsonInclude(Include.ALWAYS)
 	public Rating getRating() {
+		if (rating == null)
+			return Rating.cold;
 		return rating;
 	}
 
@@ -371,8 +373,8 @@ public class Attendee {
 			this.scannedAt = latest.scannedAt;
 		if (this.modifiedAt.compareTo(latest.modifiedAt) < 0)
 			this.modifiedAt = latest.modifiedAt;
-		if (this.rating == null || this.rating.compareTo(latest.rating) < 0)
-			this.rating = latest.rating;
+		if (this.getRating().compareTo(latest.getRating()) < 0)
+			this.rating = latest.getRating();
 		if (this.tags != null && latest.tags != null)
 			this.tags.addAll(latest.tags);
 		else if (latest.tags != null)
