@@ -13,6 +13,7 @@ package com.genuitec.qfconf.backend.model;
 import java.util.Date;
 import java.util.SortedSet;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Temporal;
@@ -23,6 +24,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.eclipse.persistence.annotations.Index;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -79,6 +81,7 @@ public class Attendee {
 	private SortedSet<String> tags;
 	private String notes;
 	private boolean followup;
+	private String lastChangedBy;
 
 	@JsonInclude(Include.ALWAYS)
 	public String getId() {
@@ -390,11 +393,21 @@ public class Attendee {
 
 	@XmlElement(name = "qrcodetext")
 	@JsonInclude(Include.ALWAYS)
+	@Column(name = "qrraw", length = 2048)
 	public String getQRCodeText() {
 		return qrcodetext;
 	}
 
 	public void setQRCodeText(String qrcodetext) {
 		this.qrcodetext = qrcodetext;
+	}
+
+	@JsonIgnore
+	public void setLastChangedBy(String lastChangedBy) {
+		this.lastChangedBy = lastChangedBy;
+	}
+
+	public String getLastChangedBy() {
+		return lastChangedBy;
 	}
 }

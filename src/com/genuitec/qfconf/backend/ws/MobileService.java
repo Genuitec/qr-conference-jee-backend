@@ -150,14 +150,17 @@ public class MobileService {
 		Attendee existing = em.find(Attendee.class, latest.getId());
 		if (existing == null) {
 			latest.setSyncTime(synctime);
+			latest.setLastChangedBy(request.getUserPrincipal().getName());
 			em.persist(latest);
 		} else if (existing.getSyncTime() != latest.getSyncTime()) {
 			existing.mergeWith(latest);
 			existing.setSyncTime(synctime);
+			existing.setLastChangedBy(request.getUserPrincipal().getName());
 			em.persist(existing);
 		} else {
 			existing.updateTo(latest);
 			existing.setSyncTime(synctime);
+			existing.setLastChangedBy(request.getUserPrincipal().getName());
 			em.persist(existing);
 		}
 	}
