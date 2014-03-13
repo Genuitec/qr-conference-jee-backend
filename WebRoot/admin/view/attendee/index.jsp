@@ -122,5 +122,8 @@
 	    	if (!address) {
 	    		out.println("<label class='details'>Address</label><i style='color: #9999aa'>Not Available</i><br/>");
 	    	}
+	    	out.println("<!--");
+	    	out.println(attendee.getQRCodeText());
+	    	out.println("-->");
 		%>
     </div>
