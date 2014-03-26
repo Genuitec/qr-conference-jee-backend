@@ -13,17 +13,20 @@ package com.genuitec.qfconf.backend.ws;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 
 import com.genuitec.qfconf.backend.model.AddResult;
 import com.genuitec.qfconf.backend.model.Attendee;
@@ -33,6 +36,9 @@ import com.genuitec.qfconf.backend.model.DataTableResult;
 @Produces({ "application/xml", "application/json" })
 @Path("attendees")
 public class AttendeesResource {
+
+	@Context
+	private HttpServletRequest request;
 
 	private Logger log = Logger.getLogger(AttendeesResource.class.getName());
 
@@ -119,6 +125,11 @@ public class AttendeesResource {
 			if (attendee.getFullname() != null)
 				attendee.setFullname(attendee.getFirstName() + " "
 						+ attendee.getLastName());
+			attendee.setSyncTime(System.currentTimeMillis());
+			attendee.setScannedAt(new Date());
+			attendee.setModifiedAt(new Date());
+			attendee.setLastChangedBy(request.getUserPrincipal().getName());
+			attendee.setEmployee(request.getUserPrincipal().getName());
 			em.getTransaction().begin();
 			em.persist(attendee);
 			em.getTransaction().commit();
