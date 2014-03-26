@@ -122,7 +122,7 @@ public class AttendeesResource {
 						+ (attendee.getFirstName() + "_" + attendee
 								.getLastName()).hashCode());
 			}
-			if (attendee.getFullname() != null)
+			if (attendee.getFullname() == null)
 				attendee.setFullname(attendee.getFirstName() + " "
 						+ attendee.getLastName());
 			attendee.setSyncTime(System.currentTimeMillis());
