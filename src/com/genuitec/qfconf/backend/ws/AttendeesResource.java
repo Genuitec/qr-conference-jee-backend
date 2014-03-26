@@ -118,8 +118,9 @@ public class AttendeesResource {
 		EntityManager em = ConferenceModel.newEntityManager();
 		try {
 			if (attendee.getId() == null || attendee.getId().length() == 0) {
-				attendee.setId("manual-" + attendee.getFirstName() + "_"
-						+ attendee.getLastName());
+				attendee.setId("man"
+						+ (attendee.getFirstName() + "_" + attendee
+								.getLastName()).hashCode());
 			}
 			if (attendee.getFullname() != null)
 				attendee.setFullname(attendee.getFirstName() + " "
