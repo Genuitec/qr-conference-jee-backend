@@ -13,7 +13,6 @@ package com.genuitec.qfconf.backend.ws;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -126,10 +125,10 @@ public class AttendeesResource {
 				attendee.setFullname(attendee.getFirstName() + " "
 						+ attendee.getLastName());
 			attendee.setSyncTime(System.currentTimeMillis());
-			attendee.setScannedAt(new Date());
-			attendee.setModifiedAt(new Date());
-			attendee.setLastChangedBy(request.getUserPrincipal().getName());
-			attendee.setEmployee(request.getUserPrincipal().getName());
+			if (request != null) {
+				attendee.setLastChangedBy(request.getUserPrincipal().getName());
+				attendee.setEmployee(request.getUserPrincipal().getName());
+			}
 			em.getTransaction().begin();
 			em.persist(attendee);
 			em.getTransaction().commit();

@@ -83,6 +83,9 @@
 
 			attendee.setModifiedAt(new Date());
 			attendee.setScannedAt(new Date());
+			attendee.setLastChangedBy(request.getUserPrincipal().getName());
+			attendee.setEmployee(request.getUserPrincipal().getName());
+			
 			new AttendeesResource().addAttendee(attendee);
 			response.sendRedirect("../../view/?id="+conf.getId());
 			return;
