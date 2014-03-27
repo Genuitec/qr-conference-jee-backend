@@ -10,15 +10,19 @@
  *******************************************************************************/
 package com.genuitec.qfconf.backend.ws;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -38,6 +42,8 @@ public class AttendeesResource {
 
 	@Context
 	private HttpServletRequest request;
+	@Context
+	private HttpServletResponse response;
 
 	private Logger log = Logger.getLogger(AttendeesResource.class.getName());
 
@@ -84,6 +90,52 @@ public class AttendeesResource {
 			result.addRowData(rowData);
 		}
 		return result;
+	}
+
+	@GET
+	@Path("{conference}/attendees.tsv")
+	@Produces("text/tab-separated-values")
+	public String getAttendeesTSV(@PathParam("conference") int conferenceID) {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm");
+		response.setHeader(
+				"Content-Disposition",
+				"attachment;filename=attendees-"
+						+ dateFormat.format(new Date()) + ".tsv");
+		dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+		StringWriter sw = new StringWriter();
+		PrintWriter out = new PrintWriter(sw);
+		out.println("first\tlast\tphone\temail\tscannedby\tscannedon\tfollowup\trating\ttags\tnotes");
+		for (Attendee attendee : getAttendees(conferenceID)) {
+			out.print(attendee.getFirstName());
+			out.print('\t');
+			out.print(attendee.getLastName());
+			out.print('\t');
+			out.print(notnull(attendee.getTelephone()));
+			out.print('\t');
+			out.print(notnull(attendee.getEmail()));
+			out.print('\t');
+			out.print(attendee.getEmployee());
+			out.print('\t');
+			out.print(dateFormat.format(attendee.getScannedAt()));
+			out.print('\t');
+			out.print(describeFollowup(attendee));
+			out.print('\t');
+			out.print(describeRating(attendee));
+			out.print('\t');
+			out.print(describeTags(attendee));
+			out.print('\t');
+			if (attendee.getNotes() != null)
+				out.print(attendee.getNotes().replace('\n', ' ')
+						.replace('\r', ' '));
+			out.println();
+		}
+		return sw.toString();
+	}
+
+	private String notnull(String value) {
+		if (value == null)
+			return "";
+		return value;
 	}
 
 	@GET

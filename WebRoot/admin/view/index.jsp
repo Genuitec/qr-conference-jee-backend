@@ -132,6 +132,9 @@
 		$("#add-attendee").button().click(function() {
 			window.location.href="admin/add/attendee/?id=<%= conf.getId() %>";
 		});
+		$("#export-tsv").button().click(function() {
+			window.location.href="ws/attendees/<%= conf.getId() %>/attendees.tsv";
+		});
 		$("#conference-list").button().click(function() {
 			window.location.href="admin/";
 		});
@@ -139,6 +142,7 @@
 	</script>
 	<p>
 		<button id="add-attendee">Manually Add Attendee</button>
+		<button id="export-tsv">Export Attendees</button>
 		<button id="conference-list">Back to Conferences</button>
 	</p>
 
